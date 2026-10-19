@@ -232,6 +232,19 @@ export default function StudentDashboardPage() {
         </div>
       </div>
 
+      {/* PROTOTYPE CLIENT REVIEW NOTICE */}
+      <div className="p-4 rounded-xl bg-amber-50 border border-amber-300 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-xs">
+        <div className="flex items-center gap-2.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+          <span className="text-amber-950 font-medium">
+            <strong className="font-bold text-amber-950">Enrolled Student Access Verified:</strong> You are inside the private portal. Live classes, batch schedule, and 7-day class recordings are now active.
+          </span>
+        </div>
+        <Link href="/courses" className="text-amber-900 font-bold hover:underline shrink-0 flex items-center gap-1">
+          Explore Other Courses <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
+      </div>
+
       {/* 2. LIVE NOW BANNER */}
       {data?.liveNow && (
         <Card

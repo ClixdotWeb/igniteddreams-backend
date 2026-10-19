@@ -33,7 +33,6 @@ export const Navbar: React.FC<NavbarProps> = () => {
     { name: "Home", href: "/" },
     { name: "Courses", href: "/courses" },
     { name: "3 Pillars", href: "/#pillars" },
-    { name: "Recordings", href: "/recordings" },
     { name: "Kindle Hub", href: "/library" },
     { name: "About Us", href: "/about" },
     { name: "Pricing", href: "/contact" },

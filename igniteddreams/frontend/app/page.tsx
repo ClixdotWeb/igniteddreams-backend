@@ -79,10 +79,6 @@ export default function HomePage() {
   const courseGridRef = useRef<HTMLDivElement>(null);
   const coursesCtaRef = useRef<HTMLDivElement>(null);
 
-  // Recordings refs
-  const recordingsRef = useRef<HTMLElement>(null);
-  const recordingsLeftRef = useRef<HTMLDivElement>(null);
-  const recordingsRightRef = useRef<HTMLDivElement>(null);
 
   // Steps refs
   const stepsRef = useRef<HTMLElement>(null);
@@ -433,42 +429,6 @@ export default function HomePage() {
         );
       }
 
-      // 4. 7-Day Recording Access Section
-      if (recordingsLeftRef.current) {
-        gsap.fromTo(
-          recordingsLeftRef.current.querySelectorAll(".rec-reveal-item"),
-          { opacity: 0, x: -35 },
-          {
-            opacity: 1,
-            x: 0,
-            duration: 0.8,
-            stagger: 0.12,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: recordingsRef.current,
-              start: "top 78%",
-            },
-          }
-        );
-      }
-
-      if (recordingsRightRef.current) {
-        gsap.fromTo(
-          recordingsRightRef.current,
-          { opacity: 0, y: 48, scale: 0.96 },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.95,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: recordingsRef.current,
-              start: "top 76%",
-            },
-          }
-        );
-      }
 
       // 5. How Academy Learning Works
       if (stepsHeaderRef.current) {
@@ -1413,129 +1373,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. 7-DAY REVISION ENGINE & LIVE CLASSROOM (White Background) */}
-      <section ref={recordingsRef} id="recordings" className="w-full bg-white py-20 sm:py-28 border-t border-[#e8f0ea]">
-        <div className="max-w-[1240px] mx-auto px-6 sm:px-10 lg:px-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            
-            {/* Left Column */}
-            <div ref={recordingsLeftRef} className="lg:col-span-5 space-y-6">
-              <span className="inline-flex items-center gap-2 text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em] text-[#0e271d]">
-                <span className="w-2 h-2 rounded-full bg-[#F5C400] inline-block" />
-                Learning Methodology
-              </span>
-
-              <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-[#0e271d] leading-[1.12] tracking-[-0.035em]">
-                Your Masterclass.<br />
-                <span className="text-[#0e271d]/40">Available for 7 Days.</span>
-              </h2>
-
-              <p className="text-slate-600 text-sm sm:text-base leading-[1.65] font-normal">
-                Every live class and problem-solving session is conducted directly on this website with webcam supervision, recorded in full HD, and accessible in your student dashboard for 7 days.
-              </p>
-
-              <div className="space-y-4 pt-2">
-                <div className="flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-[#0e271d] text-[#F5C400] flex items-center justify-center shrink-0">
-                    <Play className="w-4 h-4 fill-current" />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-[#0e271d] tracking-tight">
-                      Watch &amp; Master Computations
-                    </h4>
-                    <p className="text-xs sm:text-sm text-slate-600 mt-0.5 leading-relaxed font-normal">
-                      Replay standard entries, freight computations, and SAP transaction steps anytime.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-[#0e271d] text-[#F5C400] flex items-center justify-center shrink-0">
-                    <Download className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-[#0e271d] tracking-tight">
-                      High-Speed MP4 Download
-                    </h4>
-                    <p className="text-xs sm:text-sm text-slate-600 mt-0.5 leading-relaxed font-normal">
-                      Save complete video lectures and spreadsheets before automatic archive.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-[#0e271d] text-[#F5C400] flex items-center justify-center shrink-0">
-                    <Clock className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-[#0e271d] tracking-tight">
-                      Automated 7-Day Server Vault
-                    </h4>
-                    <p className="text-xs sm:text-sm text-slate-600 mt-0.5 leading-relaxed font-normal">
-                      Encourages daily revision discipline before safe 2-year archival in company server vault.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4">
-                <ArrowPillButton href="/login">
-                  Access Student Recordings
-                </ArrowPillButton>
-              </div>
-            </div>
-
-            {/* Right Column: Sleek Player Card */}
-            <div ref={recordingsRightRef} className="lg:col-span-7">
-              <div className="rounded-2xl bg-[#0e271d] border border-[#163a2b] p-6 sm:p-8 space-y-6 shadow-2xl text-white">
-                <div className="flex items-center justify-between pb-4 border-b border-white/10">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping inline-block" />
-                    <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/90">
-                      Live Proctoring Verified
-                    </span>
-                  </div>
-                  <span className="px-3 py-1 rounded-full text-xs font-bold font-mono bg-[#F5C400] text-[#0e271d]">
-                    3 Hours Daily
-                  </span>
-                </div>
-
-                {/* Video Mockup */}
-                <div className="relative aspect-video rounded-xl overflow-hidden bg-black/60 border border-white/10 group">
-                  <img
-                    src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=85"
-                    alt="Live Classroom Session"
-                    className="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-500"
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <div className="w-14 h-14 rounded-full bg-[#F5C400] text-[#0e271d] flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
-                      <Play className="w-6 h-6 fill-current ml-0.5" />
-                    </div>
-                  </div>
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-white/80 bg-black/60 px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                    <span className="font-medium">SAP S/4HANA • Outbound Delivery (VL01N)</span>
-                    <span className="text-[#F5C400] font-mono font-bold">54:20 / 120:00</span>
-                  </div>
-                </div>
-
-                {/* Sub-controls */}
-                <div className="flex flex-wrap items-center justify-between gap-4 pt-1">
-                  <div className="flex items-center gap-2 bg-[#163a2b] p-1 rounded-lg border border-white/10 text-xs">
-                    <span className="px-2.5 py-1 text-white/60 font-medium">1.0x</span>
-                    <span className="px-2.5 py-1 text-white/60 font-medium">1.5x</span>
-                    <span className="px-2.5 py-1 bg-[#F5C400] text-[#0e271d] font-bold rounded">2.0x</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-semibold text-[#F5C400]">
-                    <Clock className="w-4 h-4" />
-                    <span>Active on Dashboard: 5 Days 12 Hours Left</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
 
       {/* 6. HOW ACADEMY LEARNING WORKS (Dark Green Background) */}
       <section ref={stepsRef} className="w-full bg-[#0e271d] py-20 sm:py-28 border-t border-[#163a2b]">

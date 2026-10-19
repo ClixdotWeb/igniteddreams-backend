@@ -26,8 +26,11 @@ import {
   Calendar,
 } from "lucide-react";
 
+import { useAuth } from "@/lib/auth-context";
+
 function CheckoutContent() {
   const router = useRouter();
+  const { login } = useAuth();
   const searchParams = useSearchParams();
   const courseParam = searchParams.get("course") || "transportation-logistics-sap";
 
@@ -59,9 +62,16 @@ function CheckoutContent() {
     teachingRatio: "1 Lead Mentor + 2 Specialized Trainers",
   };
 
-  const handlePayment = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handlePayment = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setIsProcessing(true);
+
+    try {
+      // Auto-authenticate as enrolled demo student so portal unlocks immediately
+      await login("rahul.sharma@example.com", "StudentPass2026!");
+    } catch (err) {
+      console.warn("Mock login fallback:", err);
+    }
 
     setTimeout(() => {
       setIsProcessing(false);
@@ -77,7 +87,7 @@ function CheckoutContent() {
         mentor: "Justin Burnard Dias (16 Yrs Logistics & Aviation Lead)",
         classTime: "Daily 3 Hours (2 Hours Live Class + 1 Hour Doubt Clearing)",
       });
-    }, 1200);
+    }, 800);
   };
 
   return (
@@ -95,7 +105,7 @@ function CheckoutContent() {
           </h1>
           <p className="text-sm text-slate-600 mt-2 leading-relaxed">
             {isPaid
-              ? "Your seat is confirmed in our 50-student cohort. You can now check in to the live classroom directly on the website."
+              ? "Your seat is confirmed in our 50-student cohort. You can now access your live classes and 7-day recordings in the Student Portal."
               : "Direct admission at running cost. No corporate markups. 100% tax included with strictly monitored live classes."}
           </p>
         </div>
@@ -104,12 +114,39 @@ function CheckoutContent() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Left: Student Details & Payment Form (7 Cols) */}
             <div className="lg:col-span-7 space-y-6">
+              {/* 1-Click Client Prototype Demo Banner */}
+              <div className="p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 text-left shadow-sm">
+                <div className="flex items-center justify-between text-xs font-bold text-amber-950 mb-1.5">
+                  <span className="flex items-center gap-1.5 font-heading">
+                    <Sparkles className="w-4 h-4 text-amber-600" />
+                    Client Review Prototype Mode
+                  </span>
+                  <Badge variant="yellow" size="sm">
+                    Instant Test
+                  </Badge>
+                </div>
+                <p className="text-xs text-amber-900 mb-3 leading-relaxed">
+                  Test the complete admission flow in 1-click: Auto-approves payment, generates your official Batch Pass, and logs you into the Student Portal (unlocking Live Classes &amp; 7-Day Recordings).
+                </p>
+                <Button
+                  type="button"
+                  onClick={() => handlePayment()}
+                  isLoading={isProcessing}
+                  variant="primary"
+                  size="md"
+                  className="w-full font-bold shadow-sm justify-center !py-3"
+                  rightIcon={<ArrowRight className="w-4 h-4" />}
+                >
+                  ⚡ 1-Click Dummy Payment &amp; Instant Portal Access
+                </Button>
+              </div>
+
               <Card padding="lg" variant="default" className="shadow-sm border border-slate-200">
                 <h2 className="text-lg font-bold text-slate-900 font-heading mb-4 flex items-center gap-2">
                   <span className="w-6 h-6 rounded-full bg-aviation-yellow text-slate-900 text-xs font-bold flex items-center justify-center">
                     1
                   </span>
-                  Student Information & Eligibility
+                  Student Information &amp; Eligibility
                 </h2>
 
                 <form onSubmit={handlePayment} className="space-y-4">
@@ -441,14 +478,14 @@ function CheckoutContent() {
               </div>
 
               <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row gap-3">
-                <Link href="/classroom/live-transportation-sap-101" className="flex-1">
-                  <Button variant="primary" size="lg" className="w-full font-bold shadow-md" rightIcon={<ArrowRight className="w-4 h-4" />}>
-                    Check In & Enter Live Classroom Now
+                <Link href="/student/dashboard" className="flex-1">
+                  <Button variant="primary" size="lg" className="w-full font-bold shadow-md justify-center" rightIcon={<ArrowRight className="w-4 h-4" />}>
+                    Enter Student Portal (Live Classes &amp; Recordings)
                   </Button>
                 </Link>
-                <Link href="/student/dashboard" className="sm:w-auto">
-                  <Button variant="outline" size="lg" className="w-full">
-                    Student Dashboard
+                <Link href="/classroom/live-transportation-sap-101" className="sm:w-auto">
+                  <Button variant="outline" size="lg" className="w-full justify-center">
+                    🔴 Enter Live Class
                   </Button>
                 </Link>
               </div>

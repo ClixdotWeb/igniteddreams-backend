@@ -85,18 +85,18 @@ export const Footer = () => {
             </h4>
             <ul className="space-y-2.5 text-xs text-slate-200">
               <li>
-                <Link href="/classroom/live-transportation-sap-101" className="hover:text-white transition-colors">
-                  Monitored Live Classroom
+                <Link href="/login" className="hover:text-white transition-colors">
+                  Student Portal Login
                 </Link>
               </li>
               <li>
-                <Link href="/recordings" className="hover:text-white transition-colors">
-                  7-Day Replay Archive
+                <Link href="/checkout" className="text-[#F5C400] font-bold hover:underline">
+                  Enroll &amp; Pay Fee Online
                 </Link>
               </li>
               <li>
                 <Link href="/student/dashboard" className="hover:text-white transition-colors">
-                  Student Dashboard
+                  Enrolled Cadet Portal
                 </Link>
               </li>
               <li className="space-y-1 pt-1">

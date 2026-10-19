@@ -29,53 +29,92 @@ export const FloatingBottomNav = () => {
     return "/student/dashboard";
   };
 
-  const navItems = [
-    {
-      id: "home",
-      label: "Home",
-      icon: Home,
-      href: "/",
-      isActive: pathname === "/",
-    },
-    {
-      id: "courses",
-      label: "Courses",
-      icon: BookOpen,
-      href: "/courses",
-      isActive: pathname?.startsWith("/courses"),
-    },
-    {
-      id: "recordings",
-      label: "Recordings",
-      icon: Video,
-      href: "/recordings",
-      badge: "7D",
-      badgeBg: "#F5C400",
-      badgeColor: "#0e271d",
-      isActive: pathname?.startsWith("/recordings"),
-    },
-    {
-      id: "live",
-      label: "Live Class",
-      icon: Radio,
-      href: "/live-classes",
-      badge: "LIVE",
-      badgeBg: "#ef4444",
-      badgeColor: "#ffffff",
-      isActive: pathname?.startsWith("/live-classes"),
-    },
-    {
-      id: "portal",
-      label: user ? (user.role === "ADMIN" ? "Admin" : user.role === "INSTRUCTOR" ? "Faculty" : "Cadet") : "Portal",
-      icon: user ? User : LogIn,
-      href: getDashboardLink(),
-      isActive:
-        pathname?.startsWith("/student") ||
-        pathname?.startsWith("/admin") ||
-        pathname?.startsWith("/instructor") ||
-        pathname === "/login",
-    },
-  ];
+  // For logged-in students, show their direct portal classroom & recordings.
+  // For public visitors: hide live classes & recordings completely from public view.
+  const navItems = user
+    ? [
+        {
+          id: "home",
+          label: "Home",
+          icon: Home,
+          href: "/",
+          isActive: pathname === "/",
+        },
+        {
+          id: "my-courses",
+          label: "Courses",
+          icon: BookOpen,
+          href: "/student/courses",
+          isActive: pathname?.startsWith("/student/courses"),
+        },
+        {
+          id: "portal",
+          label: "Dashboard",
+          icon: User,
+          href: "/student/dashboard",
+          isActive: pathname === "/student/dashboard",
+        },
+        {
+          id: "recordings",
+          label: "Recordings",
+          icon: Video,
+          href: "/student/recordings",
+          badge: "7D",
+          badgeBg: "#F5C400",
+          badgeColor: "#0e271d",
+          isActive: pathname?.startsWith("/student/recordings"),
+        },
+        {
+          id: "live",
+          label: "Live Class",
+          icon: Radio,
+          href: "/classroom/live-transportation-sap-101",
+          badge: "LIVE",
+          badgeBg: "#ef4444",
+          badgeColor: "#ffffff",
+          isActive: pathname?.startsWith("/classroom"),
+        },
+      ]
+    : [
+        {
+          id: "home",
+          label: "Home",
+          icon: Home,
+          href: "/",
+          isActive: pathname === "/",
+        },
+        {
+          id: "courses",
+          label: "Courses",
+          icon: BookOpen,
+          href: "/courses",
+          isActive: pathname?.startsWith("/courses"),
+        },
+        {
+          id: "hub",
+          label: "Kindle Hub",
+          icon: BookOpen,
+          href: "/library",
+          isActive: pathname?.startsWith("/library"),
+        },
+        {
+          id: "enroll",
+          label: "Enroll",
+          icon: BookOpen,
+          href: "/checkout",
+          badge: "ADMIT",
+          badgeBg: "#F5C400",
+          badgeColor: "#0e271d",
+          isActive: pathname === "/checkout",
+        },
+        {
+          id: "portal",
+          label: "Portal",
+          icon: LogIn,
+          href: "/login",
+          isActive: pathname === "/login",
+        },
+      ];
 
   return (
     <AnimatePresence>
