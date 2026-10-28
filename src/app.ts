@@ -19,8 +19,9 @@ import { prisma } from "./services/prisma";
 
 const app = express();
 
-// Behind Nginx: trust the first proxy hop so req.ip and rate limiting see the real client IP
-app.set("trust proxy", 1);
+// Number of reverse proxies in front of the API, so req.ip and rate limiting see the real client IP.
+// Docker nginx only = 1. Coolify (Traefik) + nginx = 2.
+app.set("trust proxy", parseInt(process.env.TRUST_PROXY_HOPS || "1", 10));
 
 // Security headers
 app.use(

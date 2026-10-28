@@ -41,6 +41,15 @@ export function errorHandler(
     });
   }
 
+  // Prisma: duplicate unique value / record missing
+  const prismaCode = (err as { code?: string }).code;
+  if (prismaCode === "P2002") {
+    return res.status(409).json({ success: false, message: "A record with this value already exists (e.g. same code, slug or email)." });
+  }
+  if (prismaCode === "P2025") {
+    return res.status(404).json({ success: false, message: "The requested record was not found." });
+  }
+
   // Handle unexpected server error
   logger.error("Unhandled Exception Caught in Error Middleware", {
     message: err.message,

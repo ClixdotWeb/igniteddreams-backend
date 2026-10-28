@@ -184,9 +184,36 @@ export class UserService {
     return { ...user, temporaryPassword };
   }
 
-  async updateUserStatus(userId: string, status: UserStatus) {
+  async getAdmins() {
+    return prisma.user.findMany({
+      where: { role: Role.ADMIN },
+      orderBy: { createdAt: "asc" },
+      select: { id: true, name: true, email: true, phone: true, status: true, createdAt: true },
+    });
+  }
+
+  async createAdmin(data: { name: string; email: string; phone?: string; password?: string }) {
+    const existing = await prisma.user.findUnique({ where: { email: data.email } });
+    if (existing) throw new ConflictError("User with this email already exists.");
+
+    const temporaryPassword = data.password ? undefined : `Id${crypto.randomBytes(6).toString("hex")}9A`;
+    const user = await prisma.user.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        passwordHash: await bcrypt.hash(data.password || temporaryPassword!, 12),
+        role: Role.ADMIN,
+      },
+      select: { id: true, name: true, email: true, phone: true, status: true, createdAt: true },
+    });
+
+    return { ...user, temporaryPassword };
+  }
+
+  async updateUserStatus(userId: string, status: UserStatus, expectedRole?: Role) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new NotFoundError("User not found");
+    if (!user || (expectedRole && user.role !== expectedRole)) throw new NotFoundError("User not found");
 
     return prisma.user.update({
       where: { id: userId },

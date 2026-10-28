@@ -17,6 +17,12 @@ router.patch("/students/:id/status", adminController.updateStudentStatus);
 // Instructors
 router.get("/instructors", adminController.getInstructors);
 router.post("/instructors", adminController.createInstructor);
+router.patch("/instructors/:id/status", adminController.updateInstructorStatus);
+
+// Admins
+router.get("/admins", adminController.getAdmins);
+router.post("/admins", adminController.createAdmin);
+router.patch("/admins/:id/status", adminController.updateAdminStatus);
 
 // Courses
 router.get("/courses", adminController.getCourses);

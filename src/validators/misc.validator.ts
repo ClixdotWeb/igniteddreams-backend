@@ -30,6 +30,23 @@ export const updateLibraryResourceSchema = z.object({
   published: z.boolean().optional(),
 });
 
+export const userStatusSchema = z.object({
+  status: z.enum(["ACTIVE", "INACTIVE", "SUSPENDED"]),
+});
+
+const strongPassword = z
+  .string()
+  .min(8, "Password must be at least 8 characters long")
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .regex(/[0-9]/, "Password must contain at least one number");
+
+export const createAdminSchema = z.object({
+  name: z.string().trim().min(2).max(100),
+  email: z.string().trim().toLowerCase().email(),
+  phone: z.string().trim().max(20).optional().or(z.literal("")).transform((v) => v || undefined),
+  password: strongPassword.optional().or(z.literal("")).transform((v) => v || undefined),
+});
+
 export const createInstructorSchema = z.object({
   name: z.string().trim().min(2).max(100),
   email: z.string().trim().toLowerCase().email(),

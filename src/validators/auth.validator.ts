@@ -15,6 +15,11 @@ export const registerSchema = z.object({
   registrationNumber: z.string().optional(),
 });
 
+export const mentorRegisterSchema = registerSchema.omit({ registrationNumber: true }).extend({
+  specialization: z.string().trim().min(2, "Tell us your teaching area").max(150),
+  bio: z.string().trim().max(1000).optional(),
+});
+
 export const loginSchema = z.object({
   email: z.string().email("Invalid email address").toLowerCase().trim(),
   password: z.string().min(1, "Password is required"),

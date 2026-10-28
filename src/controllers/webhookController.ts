@@ -43,7 +43,8 @@ export class WebhookController {
           const status = egressInfo.status; // EGRESS_COMPLETE, EGRESS_FAILED, etc.
           const fileResults = egressInfo.fileResults?.[0];
 
-          if (status === 3 || String(status).includes("COMPLETE")) {
+          // LiveKit EgressStatus: 3 COMPLETE, 4 FAILED, 5 ABORTED, 6 LIMIT_REACHED (file is still saved)
+          if (status === 3 || status === 6 || String(status).includes("COMPLETE") || String(status).includes("LIMIT_REACHED")) {
             // Egress finished successfully and uploaded to Cloudflare R2
             logger.info(`LiveKit Egress ${egressId} completed successfully. Updating recording to READY.`);
 
@@ -58,7 +59,7 @@ export class WebhookController {
               fileSize,
               durationSeconds,
             });
-          } else if (status === 4 || String(status).includes("FAILED")) {
+          } else if (status === 4 || status === 5 || String(status).includes("FAILED") || String(status).includes("ABORTED")) {
             logger.error(`LiveKit Egress ${egressId} failed with error: ${egressInfo.error}`);
             await prisma.recording.updateMany({
               where: { externalRecordingId: egressId },

@@ -9,7 +9,7 @@ import { settingService } from "../services/settingService";
 import { auditService } from "../services/auditService";
 import { paymentService } from "../services/paymentService";
 import { inquiryService } from "../services/inquiryService";
-import { updateInquirySchema, createInstructorSchema } from "../validators/misc.validator";
+import { updateInquirySchema, createInstructorSchema, createAdminSchema, userStatusSchema } from "../validators/misc.validator";
 import {
   createCourseSchema,
   updateCourseSchema,
@@ -141,8 +141,8 @@ export class AdminController {
   async updateStudentStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const id = String(req.params.id);
-      const { status } = req.body;
-      const updated = await userService.updateUserStatus(id, status);
+      const { status } = userStatusSchema.parse(req.body);
+      const updated = await userService.updateUserStatus(id, status, Role.STUDENT);
       return sendSuccess(res, updated, `Student status updated to ${status}`);
     } catch (error) {
       next(error);
@@ -175,6 +175,70 @@ export class AdminController {
     try {
       const result = await userService.createInstructor(createInstructorSchema.parse(req.body));
       return sendSuccess(res, result, "Instructor account created successfully", 201);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateInstructorStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = String(req.params.id);
+      const { status } = userStatusSchema.parse(req.body);
+      await userService.updateUserStatus(id, status, Role.INSTRUCTOR);
+      await auditService.log({
+        actorId: req.user!.id,
+        action: status === "ACTIVE" ? "INSTRUCTOR_APPROVED" : "INSTRUCTOR_STATUS_CHANGED",
+        entity: "User",
+        entityId: id,
+        metadata: { status },
+      });
+      return sendSuccess(res, null, `Mentor status updated to ${status}`);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // ADMINS
+  async getAdmins(req: Request, res: Response, next: NextFunction) {
+    try {
+      return sendSuccess(res, await userService.getAdmins());
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async createAdmin(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await userService.createAdmin(createAdminSchema.parse(req.body));
+      await auditService.log({
+        actorId: req.user!.id,
+        action: "ADMIN_CREATED",
+        entity: "User",
+        entityId: result.id,
+        metadata: { email: result.email },
+      });
+      return sendSuccess(res, result, "Admin account created", 201);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateAdminStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = String(req.params.id);
+      if (id === req.user!.id) {
+        return res.status(400).json({ success: false, message: "You cannot change your own admin status." });
+      }
+      const { status } = userStatusSchema.parse(req.body);
+      await userService.updateUserStatus(id, status, Role.ADMIN);
+      await auditService.log({
+        actorId: req.user!.id,
+        action: "ADMIN_STATUS_CHANGED",
+        entity: "User",
+        entityId: id,
+        metadata: { status },
+      });
+      return sendSuccess(res, null, `Admin status updated to ${status}`);
     } catch (error) {
       next(error);
     }

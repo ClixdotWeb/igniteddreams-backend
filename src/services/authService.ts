@@ -88,6 +88,43 @@ export class AuthService {
     };
   }
 
+  /**
+   * Mentor self sign-up. The account starts INACTIVE (pending) and cannot log in
+   * until an admin approves it from the Faculty page.
+   */
+  async registerMentor(data: {
+    name: string;
+    email: string;
+    password: string;
+    phone?: string;
+    specialization: string;
+    bio?: string;
+  }) {
+    const existing = await prisma.user.findUnique({ where: { email: data.email } });
+    if (existing) {
+      throw new ConflictError("An account with this email address already exists.");
+    }
+
+    return prisma.user.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        passwordHash: await this.hashPassword(data.password),
+        role: Role.INSTRUCTOR,
+        status: "INACTIVE",
+        instructorProfile: {
+          create: {
+            employeeId: `INS-${crypto.randomBytes(3).toString("hex").toUpperCase()}`,
+            specialization: data.specialization,
+            bio: data.bio,
+          },
+        },
+      },
+      select: { id: true, name: true, email: true, role: true, status: true },
+    });
+  }
+
   async login(data: { email: string; password: string }) {
     const user = await prisma.user.findUnique({
       where: { email: data.email },
@@ -104,6 +141,10 @@ export class AuthService {
     const isValid = await this.verifyPassword(data.password, user.passwordHash);
     if (!isValid) {
       throw new UnauthorizedError("Invalid email or password.");
+    }
+
+    if (user.status === "INACTIVE" && user.role === Role.INSTRUCTOR) {
+      throw new BadRequestError("Your mentor application is pending admin approval. You can log in once it is approved.");
     }
 
     if (user.status !== "ACTIVE") {

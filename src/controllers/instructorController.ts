@@ -53,7 +53,8 @@ export class InstructorController {
 
       // 4. Assigned batches & student count
       const assignedBatches = await prisma.batch.findMany({
-        where: { instructorId, status: "ACTIVE" },
+        // Include batches that have not started yet, so new mentors see their students
+        where: { instructorId, status: { in: ["UPCOMING", "ACTIVE"] } },
         include: {
           course: { select: { title: true } },
           _count: { select: { enrollments: true } },

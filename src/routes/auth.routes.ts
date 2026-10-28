@@ -6,6 +6,7 @@ import { authenticateUser } from "../middleware/auth";
 const router = Router();
 
 router.post("/register", authLimiter, authController.register);
+router.post("/register/mentor", authLimiter, authController.registerMentor);
 router.post("/login", authLimiter, authController.login);
 router.post("/logout", authController.logout);
 router.post("/forgot-password", authLimiter, authController.forgotPassword);

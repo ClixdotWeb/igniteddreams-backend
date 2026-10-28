@@ -119,7 +119,12 @@ export class ClassService {
       return classSession;
     }
 
-    await livekitService.ensureRoom(classSession.roomName);
+    try {
+      await livekitService.ensureRoom(classSession.roomName);
+    } catch (err) {
+      logger.error("LiveKit server unreachable while starting class", err);
+      throw new ServiceUnavailableError("The live classroom server is not reachable right now. Please try again in a minute or contact the admin.");
+    }
 
     // 1. Update class status to LIVE
     const updatedClass = await prisma.classSession.update({

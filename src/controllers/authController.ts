@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { authService } from "../services/authService";
 import {
   registerSchema,
+  mentorRegisterSchema,
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
@@ -26,6 +27,17 @@ export class AuthController {
 
       // Token travels only in the HTTP-only cookie, never in the JSON body
       return sendSuccess(res, { user: result.user }, "Account registered successfully", 201);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async registerMentor(req: Request, res: Response, next: NextFunction) {
+    try {
+      const validated = mentorRegisterSchema.parse(req.body);
+      const user = await authService.registerMentor(validated);
+      // No session cookie: the account must be approved by an admin first
+      return sendSuccess(res, { user }, "Application submitted. An admin will review and approve your mentor account.", 201);
     } catch (error) {
       next(error);
     }
