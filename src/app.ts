@@ -32,8 +32,20 @@ app.use(
 );
 
 // CORS configuration (Strict: Only allow configured frontend origin with credentials)
+// The site's www / non-www twin is allowed too; CORS_ORIGINS adds any extra frontends (comma separated)
+const withWwwTwin = (url: string) => {
+  try {
+    const u = new URL(url);
+    const twin = new URL(url);
+    twin.hostname = u.hostname.startsWith("www.") ? u.hostname.slice(4) : `www.${u.hostname}`;
+    return [u.origin, twin.origin];
+  } catch {
+    return [url];
+  }
+};
 const allowedOrigins = [
-  config.cors.frontendUrl,
+  ...withWwwTwin(config.cors.frontendUrl),
+  ...(process.env.CORS_ORIGINS || "").split(",").map((o) => o.trim()).filter(Boolean),
   "http://localhost:3000",
   "http://127.0.0.1:3000",
   "http://localhost:3001",
