@@ -72,6 +72,35 @@ export class WebhookController {
           break;
         }
 
+        case "track_published": {
+          const room = event.room;
+          if (!room?.name) break;
+          const classSession = await prisma.classSession.findUnique({ where: { roomName: room.name } });
+          if (!classSession || classSession.status !== "LIVE" || !classSession.recordingEnabled) break;
+
+          const pending = await prisma.recording.findFirst({
+            where: { classSessionId: classSession.id, status: RecordingStatus.SCHEDULED, externalRecordingId: null },
+          });
+          if (!pending?.storageKey) break;
+
+          // Claim it atomically so parallel webhooks never start two recorders
+          const claimed = await prisma.recording.updateMany({
+            where: { id: pending.id, status: RecordingStatus.SCHEDULED, externalRecordingId: null },
+            data: { status: RecordingStatus.RECORDING },
+          });
+          if (claimed.count !== 1) break;
+
+          const egressId = await livekitService.startRoomRecording(room.name, pending.storageKey);
+          await prisma.recording.update({
+            where: { id: pending.id },
+            data: egressId
+              ? { externalRecordingId: egressId }
+              : { status: RecordingStatus.FAILED, lastError: "Recording could not be started (check LiveKit Egress and R2 configuration)." },
+          });
+          logger.info(`Recording ${egressId ? "started" : "failed to start"} for class ${classSession.id} after first track was published`);
+          break;
+        }
+
         case "participant_joined": {
           const participant = event.participant;
           const room = event.room;

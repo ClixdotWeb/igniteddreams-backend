@@ -5,7 +5,7 @@ import { notificationService } from "./notificationService";
 import { settingService } from "./settingService";
 import { NotFoundError, ForbiddenError, BadRequestError, ServiceUnavailableError } from "../utils/errors";
 import { Prisma } from "@prisma/client";
-import { ClassStatus, Role } from "../types/enums";
+import { ClassStatus, RecordingStatus, Role } from "../types/enums";
 import { logger } from "../utils/logger";
 
 export class ClassService {
@@ -132,24 +132,14 @@ export class ClassService {
       data: { status: ClassStatus.LIVE },
     });
 
-    // 2. If recording is enabled, initialize recording entry & trigger LiveKit Egress
+    // 2. If recording is enabled, prepare the recording entry. The LiveKit recorder is started
+    //    from the track_published webhook, once someone is actually sending camera/mic/screen.
+    //    Starting it before anyone joins makes LiveKit fail with "Start signal not received".
     if (classSession.recordingEnabled) {
       try {
-        const recording = await recordingService.initializeRecording(classId);
-        if (recording.storageKey) {
-          const egressId = await livekitService.startRoomRecording(
-            classSession.roomName,
-            recording.storageKey
-          );
-          await prisma.recording.update({
-            where: { id: recording.id },
-            data: egressId
-              ? { externalRecordingId: egressId, status: "RECORDING" }
-              : { status: "FAILED", lastError: "Recording could not be started (check LiveKit Egress and R2 configuration)." },
-          });
-        }
+        await recordingService.initializeRecording(classId, RecordingStatus.SCHEDULED);
       } catch (err) {
-        logger.error("Failed to automatically start recording on class launch", err);
+        logger.error("Failed to prepare recording on class launch", err);
       }
     }
 
@@ -191,11 +181,14 @@ export class ClassService {
     }
     await livekitService.closeRoom(classSession.roomName);
 
-    // 2. Mark active recording as PROCESSING (the egress_ended webhook moves it to READY)
+    // 2. Mark active recording as PROCESSING (the egress_ended webhook moves it to READY).
+    //    If it never started (nobody shared camera/mic/screen), mark it FAILED with a clear reason.
     if (activeRecording) {
       await prisma.recording.update({
         where: { id: activeRecording.id },
-        data: { status: "PROCESSING" },
+        data: activeRecording.externalRecordingId
+          ? { status: "PROCESSING" }
+          : { status: "FAILED", lastError: "Nothing was recorded: no one turned on camera, mic or screen share." },
       });
     }
 

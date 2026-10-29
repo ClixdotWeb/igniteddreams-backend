@@ -16,7 +16,7 @@ export class RecordingService {
   /**
    * Initializes a recording entry when class starts
    */
-  async initializeRecording(classSessionId: string) {
+  async initializeRecording(classSessionId: string, initialStatus: RecordingStatus = RecordingStatus.RECORDING) {
     const classSession = await prisma.classSession.findUnique({
       where: { id: classSessionId },
       include: { course: true, batch: true },
@@ -37,7 +37,7 @@ export class RecordingService {
         storageKey,
         fileName,
         mimeType: "video/mp4",
-        status: RecordingStatus.RECORDING,
+        status: initialStatus,
       },
     });
 
