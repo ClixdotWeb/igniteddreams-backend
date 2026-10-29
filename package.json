@@ -2,11 +2,11 @@
   "name": "igniteddreams-backend",
   "version": "1.0.0",
   "description": "IgnitedDreams Aviation Academy Backend API & 7-Day Recording Engine",
-  "main": "dist/server.js",
+  "main": "dist/src/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "prisma generate --schema=prisma/schema.prisma && tsc",
-    "start": "node dist/server.js",
+    "start": "node dist/src/server.js",
     "prisma:generate": "prisma generate --schema=prisma/schema.prisma",
     "prisma:generate:sqlite": "prisma generate --schema=prisma/schema.sqlite.prisma",
     "db:push:sqlite": "prisma db push --schema=prisma/schema.sqlite.prisma",

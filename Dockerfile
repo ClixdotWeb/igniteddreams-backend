@@ -33,4 +33,4 @@ COPY --from=builder /app/dist ./dist
 EXPOSE 5000
 
 # Sync the PostgreSQL schema (non-destructive changes only), then start the API
-CMD ["sh", "-c", "npx prisma db push --skip-generate --schema=prisma/schema.prisma && node dist/server.js"]
+CMD ["sh", "-c", "npx prisma db push --skip-generate --schema=prisma/schema.prisma && node dist/src/server.js"]
