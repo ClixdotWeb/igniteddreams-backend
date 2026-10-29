@@ -165,6 +165,7 @@ export class StudentController {
         classSession: {
           batchId: { in: batchIds },
         },
+        status: { notIn: ["FAILED", "DELETED", "DELETING", "ARCHIVED"] },
       };
 
       if (courseId) {
