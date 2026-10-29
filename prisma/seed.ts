@@ -155,7 +155,7 @@ const COURSES: SeedCourse[] = [
     level: "Specialized",
     description:
       "Specialized training for air cargo freight forwarders, pharma cold-chain handlers, and airport cargo terminal supervisors: airway bill (AWB) generation, ULD palletization and IATA Dangerous Goods Regulations compliance.",
-    thumbnail: "https://images.unsplash.com/photo-1519074069444-1ba4ea16e879?auto=format&fit=crop&w=1200&q=85",
+    thumbnail: "https://images.unsplash.com/photo-1569629743817-70d8db6c323b?auto=format&fit=crop&w=1200&q=85",
     marketPrice: 125000,
     facultyTitle: "Aviation Ground & Cargo Lead",
     facultyBio: "16 Years Industry Experience",

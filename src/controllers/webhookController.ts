@@ -101,6 +101,32 @@ export class WebhookController {
           break;
         }
 
+        case "room_finished": {
+          // Everyone left (or LiveKit closed the empty room) without the mentor pressing End Class.
+          const room = event.room;
+          if (!room?.name) break;
+          const classSession = await prisma.classSession.findUnique({
+            where: { roomName: room.name },
+            include: { recordings: true },
+          });
+          if (!classSession || classSession.status !== "LIVE") break;
+
+          for (const rec of classSession.recordings) {
+            if (rec.status === RecordingStatus.SCHEDULED && !rec.externalRecordingId) {
+              await prisma.recording.update({
+                where: { id: rec.id },
+                data: { status: RecordingStatus.FAILED, lastError: "Nothing was recorded: no one turned on camera, mic or screen share." },
+              });
+            } else if (rec.status === RecordingStatus.RECORDING) {
+              // egress_ended will move it to READY once the file is uploaded
+              await prisma.recording.update({ where: { id: rec.id }, data: { status: RecordingStatus.PROCESSING } });
+            }
+          }
+          await prisma.classSession.update({ where: { id: classSession.id }, data: { status: "COMPLETED" } });
+          logger.info(`Class ${classSession.id} marked COMPLETED after its LiveKit room finished`);
+          break;
+        }
+
         case "participant_joined": {
           const participant = event.participant;
           const room = event.room;
